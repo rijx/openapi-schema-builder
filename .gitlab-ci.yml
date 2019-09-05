@@ -31,7 +31,7 @@ release MR:
     - master
   script:
     # determine latest + new version
-    - LATEST_VERSION=$(git describe --abbrev=0 --tags --match 'v*.*.*')
+    - LATEST_VERSION=$(git describe --abbrev=0 --tags --match 'v*.*.*' || echo v1.0.0)
     - VERSION_INCREMENT=$(node bin/getMRVersionIncrement)
     - VERSION=$(npx semver -i $VERSION_INCREMENT $LATEST_VERSION)
     # prepare SSH auth
@@ -51,7 +51,7 @@ release patch:
   script:
     - apk add --no-cache git openssh-client
     # determine latest + new version
-    - LATEST_VERSION=$(git describe --abbrev=0 --tags --match 'v*.*.*')
+    - LATEST_VERSION=$(git describe --abbrev=0 --tags --match 'v*.*.*' || echo v1.0.0)
     - VERSION=$(npx semver -i patch $LATEST_VERSION)
     # prepare SSH auth
     - eval $(ssh-agent -s)
