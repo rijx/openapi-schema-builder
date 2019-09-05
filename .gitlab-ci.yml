@@ -39,7 +39,7 @@ release MR:
     # tag the version
     - TAG_NAME=v$VERSION
     - git tag $TAG_NAME
-    - git push origin $TAG_NAME
+    - git push git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git $TAG_NAME
 
 release patch:
   stage: release
@@ -58,7 +58,7 @@ release patch:
     # tag the version
     - TAG_NAME=v$VERSION
     - git tag $TAG_NAME
-    - git push origin $TAG_NAME
+    - git push git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git $TAG_NAME
 
 publish release:
   stage: release
@@ -81,4 +81,4 @@ publish release:
     # create maintenance branch if it doesn't exist yet
     - BRANCH_NAME=v$(echo $VERSION | awk -F. '{ print $1 "." $2 }')
     - git branch $BRANCH_NAME
-    - git push origin $BRANCH_NAME || true
+    - git push git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git $BRANCH_NAME || true
