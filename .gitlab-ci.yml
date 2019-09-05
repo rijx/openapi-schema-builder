@@ -39,6 +39,7 @@ release MR:
     # tag the version
     - TAG_NAME=v$VERSION
     - git tag $TAG_NAME
+    - ssh-keyscan $CI_SERVER_HOST
     - git push git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git $TAG_NAME
 
 release patch:
@@ -58,6 +59,7 @@ release patch:
     # tag the version
     - TAG_NAME=v$VERSION
     - git tag $TAG_NAME
+    - ssh-keyscan $CI_SERVER_HOST
     - git push git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git $TAG_NAME
 
 publish release:
@@ -81,4 +83,5 @@ publish release:
     # create maintenance branch if it doesn't exist yet
     - BRANCH_NAME=v$(echo $VERSION | awk -F. '{ print $1 "." $2 }')
     - git branch $BRANCH_NAME
+    - ssh-keyscan $CI_SERVER_HOST
     - git push git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git $BRANCH_NAME || true
