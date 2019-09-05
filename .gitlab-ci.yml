@@ -1,0 +1,81 @@
+stages:
+  - verify
+  - release
+
+test:
+  stage: verify
+  image: node:8.16-alpine
+  script:
+    - npm install
+    - npm test
+
+lint:
+  stage: verify
+  image: node:8.16-alpine
+  script:
+    - npm install
+    - npm run lint
+
+audit:
+  stage: verify
+  image: node:8.16-alpine
+  script:
+    - npm install --no-audit
+    - npm audit
+
+release MR:
+  stage: release
+  image: node:8.16-alpine
+  only:
+    - merge_requests
+    - master
+  script:
+    # determine latest + new version
+    - LATEST_VERSION=$(git describe --abbrev=0 --tags --match 'v*.*.*')
+    - VERSION_INCREMENT=$(node bin/getMRVersionIncrement)
+    - VERSION=$(npx semver -i $VERSION_INCREMENT $LATEST_VERSION)
+    # prepare SSH auth
+    - eval $(ssh-agent -s)
+    - ssh-add $CI_DEPLOYMENT_KEY_FILE
+    # tag the version
+    - TAG_NAME=v$VERSION
+    - git tag $TAG_NAME
+    - git push origin $TAG_NAME
+
+release patch:
+  stage: release
+  image: node:8.16-alpine
+  only:
+    - branches
+    - /^v([0-9]+).([0-9]+)$/
+  script:
+    # determine latest + new version
+    - LATEST_VERSION=$(git describe --abbrev=0 --tags --match 'v*.*.*')
+    - VERSION=$(npx semver -i patch $LATEST_VERSION)
+    # prepare SSH auth
+    - eval $(ssh-agent -s)
+    - ssh-add $CI_DEPLOYMENT_KEY_FILE
+    # tag the version
+    - TAG_NAME=v$VERSION
+    - git tag $TAG_NAME
+    - git push origin $TAG_NAME
+
+publish release:
+  stage: release
+  image: node:8.16-alpine
+  only:
+    - tags
+    - /^v([0-9]+).([0-9]+).([0-9]+)$/
+  script:
+    # set version based on tag name
+    - VERSION=$(npx semver "$CI_COMMIT_TAG")
+    - cat package.json | jq .version\ =\ \"$VERSION\" > package.json.new
+    - mv package.json.new package.json
+    # publish package to npm
+    - echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > .npmrc
+    - npm install
+    - npm publish
+    # create maintenance branch if it doesn't exist yet
+    - BRANCH_NAME=v$(echo $VERSION | awk -F. '{ print $1 "." $2 }')
+    - git branch $BRANCH_NAME
+    - git push origin $BRANCH_NAME || true
