@@ -7,7 +7,7 @@
     "check-deps-staged": "git show :package.json | node bin/checkDeps",
     "check-eslint-config": "eslint --print-config . | eslint-config-prettier-check",
     "eslint": "npm run check-eslint-config && eslint --ignore-path .gitignore .",
-    "eslint-staged": "npm run check-eslint-config && git diff --name-only --cached \"**/*.js\" | xargs -0 sh -c 'git show :$0 | eslint --stdin --stdin-filename $0'",
+    "eslint-staged": "npm run check-eslint-config && git diff --name-only --cached | grep .js$ | xargs -0 sh -c 'git show :$0 | eslint --stdin --stdin-filename $0'",
     "lint": "npm run check-deps && npm run eslint",
     "lint-staged": "npm run check-deps-staged && npm run eslint-staged",
     "lint-fix": "prettier --ignore-path .gitignore --write \"**/*.{js,json,yml,yaml,scss,md}\"",
