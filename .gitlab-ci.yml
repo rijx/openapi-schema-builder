@@ -36,7 +36,7 @@ release MR:
     - VERSION=$(npx semver -i $VERSION_INCREMENT $LATEST_VERSION)
     # prepare SSH auth
     - eval $(ssh-agent -s)
-    - ssh-add $CI_DEPLOYMENT_KEY_FILE
+    - cat $CI_DEPLOYMENT_KEY_FILE | ssh-add -
     # tag the version
     - TAG_NAME=v$VERSION
     - git tag $TAG_NAME
@@ -55,7 +55,7 @@ release patch:
     - VERSION=$(npx semver -i patch $LATEST_VERSION)
     # prepare SSH auth
     - eval $(ssh-agent -s)
-    - ssh-add $CI_DEPLOYMENT_KEY_FILE
+    - cat $CI_DEPLOYMENT_KEY_FILE | ssh-add -
     # tag the version
     - TAG_NAME=v$VERSION
     - git tag $TAG_NAME
