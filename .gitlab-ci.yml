@@ -28,7 +28,6 @@ release MR:
   image: node:8.16-alpine
   only:
     - merge_requests
-    - master
   script:
     # determine latest + new version
     - LATEST_VERSION=$(git describe --abbrev=0 --tags --match 'v*.*.*' || echo v1.0.0)
