@@ -1,7 +1,8 @@
 module.exports = {
   extends: ["plugin:jest/recommended", "plugin:prettier/recommended"],
   parserOptions: {
-    sourceType: "module"
+    sourceType: "module",
+    ecmaVersion: 2018
   },
   rules: {
     "no-constant-condition": ["error", { checkLoops: false }],
