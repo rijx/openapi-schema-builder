@@ -1,6 +1,7 @@
 const mapping = {
   "release::breaking": "major",
-  "release::feature": "minor"
+  "release::feature": "minor",
+  "release::fix": "patch"
 };
 
 const incrementsByLabel = process.env.CI_MERGE_REQUEST_LABELS.split(/,/g)
@@ -11,4 +12,4 @@ if (incrementsByLabel.length > 1) {
   throw new Error("Multiple matching labels were specified");
 }
 
-process.stdout.write(`${incrementsByLabel[0] || "patch"}\n`);
+process.stdout.write(`${incrementsByLabel[0] || ""}\n`);
