@@ -30,41 +30,21 @@ audit:
     - npm install --no-audit
     - npm audit
 
-release initial:
+release feature:
   stage: release
   image: node:8.16-alpine
   only:
     - master
   script:
     - apk add --no-cache git openssh-client
-    # determine latest + new version
-    - git describe --abbrev=0 --tags --match v1.0.0 && exit
-    # prepare SSH auth
-    - eval $(ssh-agent -s)
-    - cat $CI_DEPLOYMENT_KEY_FILE | ssh-add -
-    # tag the version
-    - TAG_NAME=v1.0.0
-    - git tag $TAG_NAME
-    - mkdir ~/.ssh
-    - ssh-keyscan $CI_SERVER_HOST >> ~/.ssh/known_hosts
-    - git push git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git $TAG_NAME
-
-release MR:
-  stage: release
-  image: node:8.16-alpine
-  only:
-    - merge_requests
-  script:
-    # determine latest + new version
-    - LATEST_VERSION=$(git describe --abbrev=0 --tags --match 'v*.*.*' || true)
-    - VERSION_INCREMENT=$(node bin/getMRVersionIncrement)
-    - VERSION=$(npx semver -i $VERSION_INCREMENT $LATEST_VERSION || echo 1.0.0)
-    # prepare SSH auth
-    - eval $(ssh-agent -s)
-    - cat $CI_DEPLOYMENT_KEY_FILE | ssh-add -
+    # determine version
+    - VERSION=$(git describe --abbrev=0 --tags --match v1.0.0 > /dev/null && npx semver -i minor $(npx semver $(git tag --list "v*.*.*") | tail -n 1) || echo 1.0.0)
     # tag the version
     - TAG_NAME=v$VERSION
     - git tag $TAG_NAME
+    # push to repository
+    - eval $(ssh-agent -s)
+    - cat $CI_DEPLOYMENT_KEY_FILE | ssh-add -
     - mkdir ~/.ssh
     - ssh-keyscan $CI_SERVER_HOST >> ~/.ssh/known_hosts
     - git push git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git $TAG_NAME
@@ -80,8 +60,8 @@ release patch:
     - apk add --no-cache git openssh-client
     # determine version
     - MINOR_VERSION=$(echo "$CI_COMMIT_REF_NAME" | awk -F- '{ print $2 }')
-    - LATEST_VERSION=$(git tag --list "v$MINOR_VERSION.*" | tail -n 1 | awk -Fv '{ print $2 }')
-    - VERSION=$([[ "$LATEST_VERSION" = "" ]] && echo "$MINOR_VERSION.0" || npx semver -i patch $LATEST_VERSION)
+    - EXISTING_VERSIONS=$(git tag --list "v$MINOR_VERSION.*")
+    - VERSION=$([[ "$EXISTING_VERSIONS" = "" ]] && echo "$MINOR_VERSION.0" || npx semver -i patch $(npx semver $EXISTING_VERSIONS | tail -n 1))
     # tag the version
     - TAG_NAME=v$VERSION
     - git tag $TAG_NAME
