@@ -95,7 +95,7 @@ describe("Schema builder", () => {
       });
 
       expect(
-        baseSchema.extend({
+        baseSchema.addProperties({
           anotherProperty: schema.boolean()
         })
       ).toEqual({
@@ -124,24 +124,6 @@ describe("Schema builder", () => {
         },
         additionalProperties: false
       });
-    });
-
-    test("Extend constraints", () => {
-      const baseSchema = schema.object({
-        hello: schema.string(),
-        world: schema.string()
-      });
-
-      expect(baseSchema.extend().setAdditionalProperties(false)).toEqual({
-        type: "object",
-        properties: {
-          hello: { type: "string" },
-          world: { type: "string" }
-        },
-        additionalProperties: false
-      });
-
-      expect(baseSchema.additionalProperties).toBeUndefined();
     });
 
     test("Required", () => {
@@ -441,6 +423,30 @@ describe("Schema builder", () => {
           type: "string"
         },
         uniqueItems: true
+      });
+    });
+  });
+
+  describe("Immutability", () => {
+    describe("Strings", () => {
+      test("title", () => {
+        const originalSpec = schema.string();
+
+        const newSpec = originalSpec.isFile();
+
+        expect(originalSpec.format).toBeUndefined();
+        expect(newSpec.format).toBe("binary");
+      });
+    });
+
+    describe("Objects", () => {
+      test("setAdditionalProperties", () => {
+        const originalSpec = schema.object();
+
+        const newSpec = originalSpec.setAdditionalProperties(true);
+
+        expect(originalSpec.additionalProperties).toBeUndefined();
+        expect(newSpec.additionalProperties).toBe(true);
       });
     });
   });

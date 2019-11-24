@@ -1,50 +1,58 @@
 class Schema {
   setTitle(value) {
-    this.title = value;
-
-    return this;
+    return Object.assign(new Schema(), {
+      ...this,
+      title: value
+    });
   }
 
   setDescription(value) {
-    this.description = value;
-
-    return this;
+    return Object.assign(new Schema(), {
+      ...this,
+      description: value
+    });
   }
 
   setDefaultValue(value) {
-    this.default = value;
-
-    return this;
+    return Object.assign(new Schema(), {
+      ...this,
+      default: value
+    });
   }
 
   setExampleValue(value) {
-    this.example = value;
-
-    return this;
+    return Object.assign(new Schema(), {
+      ...this,
+      example: value
+    });
   }
 
   isDeprecated() {
-    this.deprecated = true;
-
-    return this;
+    return Object.assign(new Schema(), {
+      ...this,
+      deprecated: true
+    });
   }
 
   isNullable() {
-    this.nullable = true;
-
-    return this;
+    return Object.assign(new Schema(), {
+      ...this,
+      nullable: true
+    });
   }
 
   isReadOnly() {
-    this.readOnly = true;
-
-    return this;
+    return Object.assign(new Schema(), {
+      ...this,
+      readOnly: true
+    });
   }
 
   isWriteOnly() {
-    this.writeOnly = true;
-
-    return this;
+    return Object.assign(new Schema(), {
+      ...this,
+      writeOnly: true
+    });
   }
 
   isRequired() {
@@ -69,20 +77,37 @@ class ObjectSchema extends Schema {
 
     Object.defineProperty(this, "required", {
       enumerable: true,
-      get: this.getRequiredPropertyKeys.bind(this)
+      get: this.getRequiredPropertyKeys.bind(this),
+      set: () => {}
     });
   }
 
   setAdditionalProperties(value) {
-    this.additionalProperties = value;
-
-    return this;
+    return Object.assign(new ObjectSchema(), this, {
+      additionalProperties: value
+    });
   }
 
-  extend(properties = {}) {
-    return new ObjectSchema({
-      ...this.properties,
-      ...properties
+  addProperties(properties = {}) {
+    return Object.assign(new ObjectSchema(), this, {
+      properties: {
+        ...this.properties,
+        ...properties
+      }
+    });
+  }
+
+  removeProperties(...names) {
+    const newProperties = {
+      ...this.properties
+    };
+
+    for (const name in names) {
+      delete newProperties[name];
+    }
+
+    return Object.assign(new ObjectSchema(), this, {
+      properties: newProperties
     });
   }
 
@@ -103,9 +128,9 @@ class ObjectSchema extends Schema {
   }
 
   setMinProperties(value) {
-    this.minProperties = value;
-
-    return this;
+    return Object.assign(new ObjectSchema(), this, {
+      minProperties: value
+    });
   }
 }
 
@@ -121,117 +146,134 @@ class StringSchema extends Schema {
       max = min;
     }
 
-    this.minLength = min;
-    this.maxLength = max;
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      minLength: min,
+      maxLength: max
+    });
   }
 
   removeLength() {
-    delete this.minLength;
-    delete this.maxLength;
+    const newInstance = Object.assign(new StringSchema(), this);
 
-    return this;
+    delete newInstance.minLength;
+    delete newInstance.maxLength;
+
+    return newInstance;
   }
 
   setMinLength(value) {
-    this.minLength = value;
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      minLength: value
+    });
   }
 
   removeMinLength() {
-    delete this.minLength;
+    const newInstance = Object.assign(new StringSchema(), this);
 
-    return this;
+    delete newInstance.minLength;
+
+    return newInstance;
   }
 
   setMaxLength(value) {
-    this.maxLength = value;
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      maxLength: value
+    });
   }
 
   removeMaxLength() {
-    delete this.maxLength;
+    const newInstance = Object.assign(new StringSchema(), this);
 
-    return this;
+    delete newInstance.maxLength;
+
+    return newInstance;
   }
 
   setPattern(regex) {
-    if (regex.source != null) {
-      this.pattern = regex.source;
-    } else {
-      this.pattern = regex;
-    }
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      pattern: regex.source || regex
+    });
   }
 
   isDateTime() {
-    this.format = "date-time";
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      format: "date-time"
+    });
   }
 
   isEmailAddress() {
-    this.format = "email";
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      format: "email"
+    });
   }
 
   isHostName() {
-    this.format = "hostname";
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      format: "hostname"
+    });
   }
 
   isIPv4() {
-    this.format = "ipv4";
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      format: "ipv4"
+    });
   }
 
   isIPv6() {
-    this.format = "ipv6";
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      format: "ipv6"
+    });
   }
 
   isPassword() {
-    this.format = "password";
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      format: "password"
+    });
   }
 
   isDate() {
-    this.format = "date";
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      format: "date"
+    });
   }
 
   isUUID() {
-    this.format = "uuid";
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      format: "uuid"
+    });
   }
 
   isBase64() {
-    this.format = "byte";
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      format: "byte"
+    });
   }
 
   isFile() {
-    this.format = "binary";
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      format: "binary"
+    });
   }
 
   addEnumValue(...values) {
-    this.enum = (this.enum || []).concat(values);
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      enum: (this.enum || []).concat(values)
+    });
   }
 
   addEnumValues(...values) {
@@ -239,9 +281,10 @@ class StringSchema extends Schema {
   }
 
   setConstantValue(value) {
-    this.enum = [value];
-
-    return this;
+    return Object.assign(new StringSchema(), {
+      ...this,
+      enum: [value]
+    });
   }
 }
 
@@ -253,71 +296,77 @@ class NumberSchema extends Schema {
   }
 
   isMultipleOf(value) {
-    this.multipleOf = value;
-
-    return this;
+    return Object.assign(new NumberSchema(), this, {
+      multipleOf: value
+    });
   }
 
   isLesserThan(value) {
-    this.maximum = value;
-    this.exclusiveMaximum = true;
-
-    return this;
+    return Object.assign(new NumberSchema(), this, {
+      maximum: value,
+      exclusiveMaximum: true
+    });
   }
 
   isAtMost(value) {
-    this.maximum = value;
-    delete this.exclusiveMaximum;
+    const newInstance = Object.assign(new NumberSchema(), this, {
+      maximum: value
+    });
 
-    return this;
+    delete newInstance.exclusiveMaximum;
+
+    return newInstance;
   }
 
   isGreaterThan(value) {
-    this.minimum = value;
-    this.exclusiveMinimum = true;
-
-    return this;
+    return Object.assign(new NumberSchema(), this, {
+      minimum: value,
+      exclusiveMinimum: true
+    });
   }
 
   isAtLeast(value) {
-    this.minimum = value;
-    delete this.exclusiveMinimum;
+    const newInstance = Object.assign(new NumberSchema(), this, {
+      minimum: value
+    });
 
-    return this;
+    delete newInstance.exclusiveMinimum;
+
+    return newInstance;
   }
 
   isInt() {
-    this.type = "integer";
-
-    return this;
+    return Object.assign(new NumberSchema(), this, {
+      type: "integer"
+    });
   }
 
   isInt32() {
-    this.type = "integer";
-    this.format = "int32";
-
-    return this;
+    return Object.assign(new NumberSchema(), this, {
+      type: "integer",
+      format: "int32"
+    });
   }
 
   isInt64() {
-    this.type = "integer";
-    this.format = "int64";
-
-    return this;
+    return Object.assign(new NumberSchema(), this, {
+      type: "integer",
+      format: "int64"
+    });
   }
 
   isDouble() {
-    this.type = "number";
-    this.format = "double";
-
-    return this;
+    return Object.assign(new NumberSchema(), this, {
+      type: "number",
+      format: "double"
+    });
   }
 
   isFloat() {
-    this.type = "number";
-    this.format = "float";
-
-    return this;
+    return Object.assign(new NumberSchema(), this, {
+      type: "number",
+      format: "float"
+    });
   }
 }
 
@@ -330,9 +379,9 @@ class ArraySchema extends Schema {
   }
 
   isUnique() {
-    this.uniqueItems = true;
-
-    return this;
+    return Object.assign(new ArraySchema(), this, {
+      uniqueItems: true
+    });
   }
 }
 
