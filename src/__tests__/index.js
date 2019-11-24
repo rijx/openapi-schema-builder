@@ -164,7 +164,7 @@ describe("Schema builder", () => {
       expect(
         schema
           .object({
-            hello: schema.string().isRequired(),
+            hello: schema.string(),
             world: schema.string()
           })
           .setMinProperties(1)
@@ -174,7 +174,6 @@ describe("Schema builder", () => {
           hello: { type: "string" },
           world: { type: "string" }
         },
-        required: ["hello"],
         minProperties: 1
       });
     });
