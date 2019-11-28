@@ -91,7 +91,7 @@ publish release:
     - echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > .npmrc
     - npm publish
     # create maintenance branch if it doesn't exist yet
-    - BRANCH_NAME=v$(echo $VERSION | awk -F. '{ print $1 "." $2 }')
+    - BRANCH_NAME=$(echo $VERSION | awk -F. '{ print "release-" $1 "." $2 }')
     - git branch $BRANCH_NAME
     - mkdir ~/.ssh
     - ssh-keyscan $CI_SERVER_HOST >> ~/.ssh/known_hosts
