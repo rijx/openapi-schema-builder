@@ -1,56 +1,56 @@
 class Schema {
+  shallowClone(newProperties = {}) {
+    return Object.assign(
+      Object.create(Object.getPrototypeOf(this)),
+      this,
+      newProperties
+    );
+  }
+
   setTitle(value) {
-    return Object.assign(new Schema(), {
-      ...this,
+    return this.shallowClone({
       title: value
     });
   }
 
   setDescription(value) {
-    return Object.assign(new Schema(), {
-      ...this,
+    return this.shallowClone({
       description: value
     });
   }
 
   setDefaultValue(value) {
-    return Object.assign(new Schema(), {
-      ...this,
+    return this.shallowClone({
       default: value
     });
   }
 
   setExampleValue(value) {
-    return Object.assign(new Schema(), {
-      ...this,
+    return this.shallowClone({
       example: value
     });
   }
 
   isDeprecated() {
-    return Object.assign(new Schema(), {
-      ...this,
+    return this.shallowClone({
       deprecated: true
     });
   }
 
   isNullable() {
-    return Object.assign(new Schema(), {
-      ...this,
+    return this.shallowClone({
       nullable: true
     });
   }
 
   isReadOnly() {
-    return Object.assign(new Schema(), {
-      ...this,
+    return this.shallowClone({
       readOnly: true
     });
   }
 
   isWriteOnly() {
-    return Object.assign(new Schema(), {
-      ...this,
+    return this.shallowClone({
       writeOnly: true
     });
   }
@@ -83,13 +83,13 @@ class ObjectSchema extends Schema {
   }
 
   setAdditionalProperties(value) {
-    return Object.assign(new ObjectSchema(), this, {
+    return this.shallowClone({
       additionalProperties: value
     });
   }
 
   addProperties(properties = {}) {
-    return Object.assign(new ObjectSchema(), this, {
+    return this.shallowClone({
       properties: {
         ...this.properties,
         ...properties
@@ -106,7 +106,7 @@ class ObjectSchema extends Schema {
       delete newProperties[name];
     }
 
-    return Object.assign(new ObjectSchema(), this, {
+    return this.shallowClone({
       properties: newProperties
     });
   }
@@ -128,7 +128,7 @@ class ObjectSchema extends Schema {
   }
 
   setMinProperties(value) {
-    return Object.assign(new ObjectSchema(), this, {
+    return this.shallowClone({
       minProperties: value
     });
   }
@@ -146,15 +146,14 @@ class StringSchema extends Schema {
       max = min;
     }
 
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       minLength: min,
       maxLength: max
     });
   }
 
   removeLength() {
-    const newInstance = Object.assign(new StringSchema(), this);
+    const newInstance = this.shallowClone();
 
     delete newInstance.minLength;
     delete newInstance.maxLength;
@@ -163,14 +162,13 @@ class StringSchema extends Schema {
   }
 
   setMinLength(value) {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       minLength: value
     });
   }
 
   removeMinLength() {
-    const newInstance = Object.assign(new StringSchema(), this);
+    const newInstance = this.shallowClone();
 
     delete newInstance.minLength;
 
@@ -178,14 +176,13 @@ class StringSchema extends Schema {
   }
 
   setMaxLength(value) {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       maxLength: value
     });
   }
 
   removeMaxLength() {
-    const newInstance = Object.assign(new StringSchema(), this);
+    const newInstance = this.shallowClone();
 
     delete newInstance.maxLength;
 
@@ -193,85 +190,73 @@ class StringSchema extends Schema {
   }
 
   setPattern(regex) {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       pattern: regex.source || regex
     });
   }
 
   isDateTime() {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       format: "date-time"
     });
   }
 
   isEmailAddress() {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       format: "email"
     });
   }
 
   isHostName() {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       format: "hostname"
     });
   }
 
   isIPv4() {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       format: "ipv4"
     });
   }
 
   isIPv6() {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       format: "ipv6"
     });
   }
 
   isPassword() {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       format: "password"
     });
   }
 
   isDate() {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       format: "date"
     });
   }
 
   isUUID() {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       format: "uuid"
     });
   }
 
   isBase64() {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       format: "byte"
     });
   }
 
   isFile() {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       format: "binary"
     });
   }
 
   addEnumValue(...values) {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       enum: (this.enum || []).concat(values)
     });
   }
@@ -281,8 +266,7 @@ class StringSchema extends Schema {
   }
 
   setConstantValue(value) {
-    return Object.assign(new StringSchema(), {
-      ...this,
+    return this.shallowClone({
       enum: [value]
     });
   }
@@ -296,20 +280,20 @@ class NumberSchema extends Schema {
   }
 
   isMultipleOf(value) {
-    return Object.assign(new NumberSchema(), this, {
+    return this.shallowClone({
       multipleOf: value
     });
   }
 
   isLesserThan(value) {
-    return Object.assign(new NumberSchema(), this, {
+    return this.shallowClone({
       maximum: value,
       exclusiveMaximum: true
     });
   }
 
   isAtMost(value) {
-    const newInstance = Object.assign(new NumberSchema(), this, {
+    const newInstance = this.shallowClone({
       maximum: value
     });
 
@@ -319,14 +303,14 @@ class NumberSchema extends Schema {
   }
 
   isGreaterThan(value) {
-    return Object.assign(new NumberSchema(), this, {
+    return this.shallowClone({
       minimum: value,
       exclusiveMinimum: true
     });
   }
 
   isAtLeast(value) {
-    const newInstance = Object.assign(new NumberSchema(), this, {
+    const newInstance = this.shallowClone({
       minimum: value
     });
 
@@ -336,34 +320,34 @@ class NumberSchema extends Schema {
   }
 
   isInt() {
-    return Object.assign(new NumberSchema(), this, {
+    return this.shallowClone({
       type: "integer"
     });
   }
 
   isInt32() {
-    return Object.assign(new NumberSchema(), this, {
+    return this.shallowClone({
       type: "integer",
       format: "int32"
     });
   }
 
   isInt64() {
-    return Object.assign(new NumberSchema(), this, {
+    return this.shallowClone({
       type: "integer",
       format: "int64"
     });
   }
 
   isDouble() {
-    return Object.assign(new NumberSchema(), this, {
+    return this.shallowClone({
       type: "number",
       format: "double"
     });
   }
 
   isFloat() {
-    return Object.assign(new NumberSchema(), this, {
+    return this.shallowClone({
       type: "number",
       format: "float"
     });
@@ -379,7 +363,7 @@ class ArraySchema extends Schema {
   }
 
   isUnique() {
-    return Object.assign(new ArraySchema(), this, {
+    return this.shallowClone({
       uniqueItems: true
     });
   }

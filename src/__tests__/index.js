@@ -449,6 +449,15 @@ describe("Schema builder", () => {
         expect(newSpec.additionalProperties).toBe(true);
       });
     });
+
+    test("isNullable + setAdditionalProperties", () => {
+      const originalSpec = schema.object();
+
+      const newSpec = originalSpec.isNullable().setAdditionalProperties(true);
+
+      expect(originalSpec.additionalProperties).toBeUndefined();
+      expect(newSpec.additionalProperties).toBe(true);
+    });
   });
 
   test("Shorthands", () => {
