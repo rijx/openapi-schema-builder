@@ -407,7 +407,9 @@ module.exports = {
     return new ArraySchema(items);
   },
   boolean() {
-    return { type: "boolean" };
+    return new Schema().shallowClone({
+      type: "boolean"
+    });
   },
   anyOf(...types) {
     return { anyOf: types };
